@@ -11,58 +11,36 @@ const {
     sqrt
 } = HomeworkAsync;
 
-//TODO сделать через определитель
-
-function calcTriangleArea(x1, y1, x2, y2, x3, y3, cb) {
-    async function sideLength(x1, y1, x2, y2) {
-        const a = await subtract(x2, x1);
-        const b = await subtract(y2, y1);
-
-        return await sqrt(await add(
-            await multiply(a, a),
-            await multiply(b, b)
-        ));
-    }
-
-    async function halfPerimeter(a, b, c) {
-        return await divide(
-            await add(await add(a, b), c),
-            2
-        );
-    }
-
-    let A, B, C, P;
-
-    Promise.all([
-        sideLength(x1, y1, x2, y2),
-        sideLength(x2, y2, x3, y3),
-        sideLength(x3, y3, x1, y1)
-    ])
-    .then(([a, b, c]) => {
-        A = a; B = b; C = c;
-
-        return halfPerimeter(a, b, c);
-    })
-    .then(res => {
-        P = res;
-
-        return Promise.all([
-            subtract(P, A),
-            subtract(P, B),
-            subtract(P, C)
-        ])
-    })
-    .then(([v1, v2, v3]) => {
-        return Promise.all([
-            multiply(P, v1),
-            multiply(v2, v3)
-        ]);
-    })
-    .then(([v1, v2]) => multiply(v1, v2))
-    .then(res => sqrt(res))
-    .then(res => cb(res))
+const abs = (x) => {
+    return less(x, 0).then(res => (res) ? multiply(x, -1) : x);
 }
 
-calcTriangleArea(1, 1, 2, 2, 3, 1, (res) => {
-    console.log('Площадь треугольника', res);
+function triangleArea(x1, y1, x2, y2, x3, y3, cb) {
+    Promise.all([
+        subtract(x1, x3),
+        subtract(y1, y3),
+        subtract(x2, x3),
+        subtract(y2, y3)
+    ])
+    .then(([a1, b1, a2, b2]) => {
+        return Promise.all([
+            multiply(a1, b2),
+            multiply(b1, a2)
+        ])
+    })
+    .then(([c, d]) => subtract(c, d))
+    .then(n => abs(n))
+    .then(n => divide(n, 2))
+    .then(res => cb(res))
+    .catch(err => console.log('Ошибка вычисления'))
+}
+
+console.log('вычислить площадь треугольника для x1=1, x2=1, y1=2, y2=2, x3=3, y3=1');
+triangleArea(1, 1, 2, 2, 3, 1, (res) => {
+    console.log('площадь треугольника равна', res);
+});
+
+console.log('вычислить площадь треугольника для x1=1, x2=1, y1=2, y2=8, x3=3, y3=6');
+triangleArea(1, 1, 2, 8, 3, 6, (res) => {
+    console.log('площадь треугольника равна', res);
 });
