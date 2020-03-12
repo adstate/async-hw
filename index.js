@@ -32,7 +32,7 @@ function triangleArea(x1, y1, x2, y2, x3, y3, cb) {
     .then(n => abs(n))
     .then(n => divide(n, 2))
     .then(res => cb(res))
-    .catch(err => console.log('Ошибка вычисления'))
+    .catch(err => console.log('Ошибка вычисления', err))
 }
 
 console.log('вычислить площадь треугольника для x1=1, x2=1, y1=2, y2=2, x3=3, y3=1');
